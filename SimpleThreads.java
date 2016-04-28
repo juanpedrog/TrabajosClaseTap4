@@ -2,7 +2,7 @@ public class SimpleThreads{
   //Display a message, preceded by
   //the name od the current thread
   static void threadMessage(String message){
-    String threadName=Thread.current.Thread().getName();
+    String threadName=Thread.currentThread().getName();
     System.out.format("%s: %s%n",threadName,message);
   }
   private static class MessageLoop implements Runnable{
@@ -34,7 +34,7 @@ public class SimpleThreads{
     //present, gives patience
     if(args.length>0){
       try{
-        patience = Long.parseLong(args[0]*1000);
+        patience = Long.parseLong(args[0])*1000;
       }catch(NumberFormatException e){
         System.out.println("El argumento debe ser entero");
         System.exit(1);
@@ -51,6 +51,17 @@ public class SimpleThreads{
     while(t.isAlive()){
       threadMessage("Aún esperando...");
       //Wait maxinum of 1 sexcond
+      //for MessageLoop thread
+      //to finish
+      t.join(1000);
+      if(((System.currentTimeMillis()-starTime)>patience)&&t.isAlive()){
+        threadMessage("Cansado de esperar ;)");
+        t.interrupt();
+        //Shouldn't be long now
+        //-- wait indefinitely
+        t.join();
+      }
     }
+    threadMessage("Finalmente!");
   }
 }
